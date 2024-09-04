@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportation</title>
+    <!-- Mapbox GL JS CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 70vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            cursor: pointer;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #ffffff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+
+        .title-h2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #131d29;
+        }
+
+        .inf-trans-box {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .inf-trans-box img {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+
+        .paragraph1 {
+            color: #455f84;
+            font-size: 14px;
+        }
+
+        /* Styles for Zoomable Image */
+        .figure-relative {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+            margin: 0;
+            /* Remove default margin */
+            padding: 0;
+            /* Remove default padding */
+        }
+
+        .image-trans {
+            width: 100%;
+            height: auto;
+            cursor: grab;
+            transition: transform 0.2s;
+            display: block;
+            /* Removes any inline spacing */
+        }
+
+        /* Zoom controls */
+        .max-min {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .max-min svg {
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="sidebar" class="side-menu">
+        <div class="inf-transportation menu-item" bis_skin_checked="1" style="display: block;">
+            <p class="title-h2"> Transportation</p>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/Hotel.png"
+                        alt="red dot - 3 Times Square" data-pagespeed-url-hash="3849021109"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">1, 2, 3</span>
+            </div>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/Transportation.png"
+                        alt="green dot - 3 Times Square" data-pagespeed-url-hash="3675462769"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">4, 5, 6</span>
+            </div>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/RestaurantsDining.png"
+                        alt="purple dot - 3 Times Square" data-pagespeed-url-hash="3117776652"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">7</span>
+            </div>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/Bar.png"
+                        alt="blue dot - 3 Times Square" data-pagespeed-url-hash="2093709168"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">A, C, E</span>
+            </div>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/Others.png"
+                        alt="orange dot - 3 Times Square" data-pagespeed-url-hash="2899952788"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">B, D, F, M</span>
+            </div>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/Bike-Stations.png"
+                        alt="yello dot - 3 Times Square" data-pagespeed-url-hash="2726215600"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">N, Q, R</span>
+            </div>
+            <div class="inf-trans-box" bis_skin_checked="1">
+                <div bis_skin_checked="1"><img src="https://3ts.com/wp-content/uploads/2021/01/Bici.png"
+                        alt="bike icon - 3 Times Square" data-pagespeed-url-hash="3351518750"
+                        onload="pagespeed.CriticalImages.checkImageForCriticality(this);"></div>
+                <span class="paragraph1">Citi Bikes</span>
+            </div>
+            <br><br>
+            <a href="#" id="poi-link" onclick="togglePOI()">See Points of Interest</a>
+        </div>
+    </div>
+    
+    </div>
+    <div class="inf-transportation" bis_skin_checked="1" style="display: block;">
+        <figure class="figure-relative desk">
+            <img class="image-trans"
+                src="https://3ts.com/wp-content/uploads/2021/02/3TS-TransportationMap-TimesSquare-2500x1443-min.jpg"
+                alt="transportation map - 3 Times Square" data-pagespeed-url-hash="770742980"
+                onload="pagespeed.CriticalImages.checkImageForCriticality(this);" style="transform: scale(1.1);">
+            <figcaption class="image-caption"></figcaption>
+        </figure>
+        <div class="max-min" bis_skin_checked="1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="90" viewBox="0 0 30 90">
+                <g id="Grupo_2" data-name="Grupo 2" transform="translate(-1394 -2312)">
+                    <g id="Grupo_1" data-name="Grupo 1" transform="translate(6)">
+                        <rect id="Path" width="30" height="90" rx="2" transform="translate(1388 2312)" fill="#fbfcfc">
+                        </rect>
+                        <path id="Line" d="M0,1H26" transform="translate(1390 2341)" fill="none"
+                            stroke="rgba(69,95,132,0.6)" stroke-linecap="square" stroke-miterlimit="10"
+                            stroke-width="0.8">
+                        </path>
+                        <path id="Line_Copy" data-name="Line Copy" d="M0,.25H26" transform="translate(1390 2372)"
+                            fill="none" stroke="rgba(69,95,132,0.6)" stroke-linecap="square" stroke-miterlimit="10"
+                            stroke-width="0.8"></path>
+                        <text id="_" data-name="+" transform="translate(1397 2312)" fill="#131d29" font-size="20"
+                            font-family="SegoeUI, Segoe UI" letter-spacing="0em">
+                            <tspan x="-0.841" y="22">+</tspan>
+                        </text>
+                        <text id="_2" data-name="–" transform="translate(1397 2342)" fill="#131d29" font-size="20"
+                            font-family="SegoeUI, Segoe UI" letter-spacing="0em">
+                            <tspan x="1" y="22">–</tspan>
+                        </text>
+                        <path id="Triangle_Copy" data-name="Triangle Copy" d="M4,0,8-8H0Z"
+                            transform="translate(1399 2396)" fill="rgba(185,196,212,0.6)"></path>
+                        <path id="Triangle" d="M4,0,8,8H0Z" transform="translate(1399 2379)" fill="rgba(69,95,132,0.6)">
+                        </path>
+                    </g>
+                </g>
+                <g id="max" data-name="Rectángulo 1" transform="translate(1.5 1.5)" fill="rgba(255,255,255,0)"
+                    stroke="rgba(112,112,112,0)" stroke-width="1">
+                    <rect width="27" height="27" stroke="none"></rect>
+                    <rect x="0.5" y="0.5" width="26" height="26" fill="none"></rect>
+                </g>
+                <g id="min" data-name="Rectángulo 2" transform="translate(1.5 31.5)" fill="rgba(255,255,255,0)"
+                    stroke="rgba(112,112,112,0)" stroke-width="1">
+                    <rect width="27" height="27" stroke="none"></rect>
+                    <rect x="0.5" y="0.5" width="26" height="26" fill="none"></rect>
+                </g>
+            </svg>
+        </div>
+    </div>
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script>
+        const image = document.querySelector('.image-trans');
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY, originX, originY;
+
+        // Zoom in function
+        document.getElementById('max').addEventListener('click', () => {
+            scale += 0.1;
+            image.style.transform = `scale(${scale})`;
+        });
+
+        // Zoom out function
+        document.getElementById('min').addEventListener('click', () => {
+            scale = Math.max(1, scale - 0.1); // Prevent scaling below 1
+            image.style.transform = `scale(${scale})`;
+        });
+
+        // Dragging functionality for panning
+        image.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            originX = parseFloat(image.style.transformOrigin.split(' ')[0]);
+            originY = parseFloat(image.style.transformOrigin.split(' ')[1]);
+            image.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            image.style.transformOrigin = `${originX + dx / scale}px ${originY + dy / scale}px`;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            image.style.cursor = 'grab';
+        });
+
+    </script>
+</body>
+
+</html>

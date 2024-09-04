@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POI Map Visualization</title>
+    <!-- Mapbox GL JS CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 70vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .hidden {
+            transform: translateX(-250px);
+        }
+
+        .menu-item {
+            cursor: pointer;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .arrow {
+            transition: transform 0.3s;
+        }
+
+        .collapsed .arrow {
+            transform: rotate(180deg);
+        }
+
+        .list-pois {
+            display: none;
+            padding-left: 10px;
+        }
+
+        .single-poi {
+            cursor: pointer;
+            padding: 5px;
+            background-color: #fff;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        #map-container {
+            position: relative;
+            flex: 1;
+            height: 100%;
+        }
+
+        #map,
+        #transportation-map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #transportation-map {
+            display: none;
+            /* Initially hidden */
+            z-index: 10;
+            /* On top of the POI map */
+        }
+
+        .custom-marker {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Style for transportation map controls */
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 11;
+        }
+
+        .map-controls button {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 5px;
+            cursor: pointer;
+            margin: 2px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar" class="side-menu">
+        <div id="poi-menu">
+            <p class="title-h2">Points of Interest</p>
+            <!-- Hotel Category -->
+            <div class="menu-item" onclick="toggleCategory(this, 'hotel')">
+                <svg class="colour" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+                    <circle id="Path" cx="5" cy="5" r="5" fill="#ef8962"></circle>
+                </svg>
+                Hotel
+                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12.53" height="7.705" viewBox="0 0 12.53 7.705">
+                    <path id="Path_3_Copy_5" d="M0,0,5.969,6.94,12,0" transform="translate(0.265 0.23)" fill="none" stroke="#242529"
+                        stroke-miterlimit="10" stroke-width="0.7"></path>
+                </svg>
+            </div>
+            <div class="list-pois">
+                <div class="single-poi" onclick="showPoi('The Knickerbocker')">The Knickerbocker</div>
+                <div class="single-poi" onclick="showPoi('Millennium Broadway Hotel')">Millennium Broadway Hotel</div>
+                <div class="single-poi" onclick="showPoi('New York Marriott Marquis')">New York Marriott Marquis</div>
+                <div class="single-poi" onclick="showPoi('Row NYC')">Row NYC</div>
+                <div class="single-poi" onclick="showPoi('W New York')">W New York</div>
+                <div class="single-poi" onclick="showPoi('Renaissance New York')">Renaissance New York</div>
+                <div class="single-poi" onclick="showPoi('InterContinental')">InterContinental</div>
+                <div class="single-poi" onclick="showPoi('The Chatwal')">The Chatwal</div>
+                <div class="single-poi" onclick="showPoi('Hyatt Centric')">Hyatt Centric</div>
+            </div>
+            
+            <!-- Restaurants & Dining Category -->
+            <div class="menu-item" onclick="toggleCategory(this, 'restaurants-dining')">
+                <svg class="colour" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+                    <circle id="Path" cx="5" cy="5" r="5" fill="#455f84"></circle>
+                </svg>
+                Restaurants & Dining
+                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12.53" height="7.705" viewBox="0 0 12.53 7.705">
+                    <path id="Path_3_Copy_5" d="M0,0,5.969,6.94,12,0" transform="translate(0.265 0.23)" fill="none" stroke="#242529"
+                        stroke-miterlimit="10" stroke-width="0.7"></path>
+                </svg>
+            </div>
+            <div class="list-pois">
+                <div class="single-poi" onclick="showPoi('Blue Fin')">Blue Fin</div>
+                <div class="single-poi" onclick="showPoi('Haru Sushi')">Haru Sushi</div>
+                <div class="single-poi" onclick="showPoi('The Ribbon')">The Ribbon</div>
+                <div class="single-poi" onclick="showPoi('Saju Bistro')">Saju Bistro</div>
+                <div class="single-poi" onclick="showPoi('The Lambs Club')">The Lambs Club</div>
+                <div class="single-poi" onclick="showPoi('Charlie Palmer at The Knick')">Charlie Palmer at The Knick</div>
+                <div class="single-poi" onclick="showPoi('Wolfgang’s Steakhouse')">Wolfgang’s Steakhouse</div>
+                <div class="single-poi" onclick="showPoi('Oceana')">Oceana</div>
+                <div class="single-poi" onclick="showPoi('Dos Caminos')">Dos Caminos</div>
+                <div class="single-poi" onclick="showPoi('Butter Midtown')">Butter Midtown</div>
+                <div class="single-poi" onclick="showPoi('Del Frisco’s Double Eagle Steakhouse')">Del Frisco’s Double Eagle
+                    Steakhouse
+                </div>
+                <div class="single-poi" onclick="showPoi('Gabriel Kreuther')">Gabriel Kreuther</div>
+                <div class="single-poi" onclick="showPoi('Sushi by Bou Times Square')">Sushi by Bou Times Square</div>
+                <div class="single-poi" onclick="showPoi('Hunt & Fish Club')">Hunt & Fish Club</div>
+                <div class="single-poi" onclick="showPoi('Osteria Al Doge')">Osteria Al Doge</div>
+                <div class="single-poi" onclick="showPoi('Ortzi')">Ortzi</div>
+                <div class="single-poi" onclick="showPoi('Burger & Lobster')">Burger & Lobster</div>
+                <div class="single-poi" onclick="showPoi('Ootoya')">Ootoya</div>
+                <div class="single-poi" onclick="showPoi('Charlie Palmer Steak')">Charlie Palmer Steak</div>
+            </div>
+            
+            <!-- Bar Category -->
+            <div class="menu-item" onclick="toggleCategory(this, 'bar')">
+                <svg class="colour" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+                    <circle id="Path" cx="5" cy="5" r="5" fill="#79a050"></circle>
+                </svg>
+                Bar
+                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12.53" height="7.705" viewBox="0 0 12.53 7.705">
+                    <path id="Path_3_Copy_5" d="M0,0,5.969,6.94,12,0" transform="translate(0.265 0.23)" fill="none" stroke="#242529"
+                        stroke-miterlimit="10" stroke-width="0.7"></path>
+                </svg>
+            </div>
+            <div class="list-pois">
+                <div class="single-poi" onclick="showPoi('Castell Rooftop Lounge')">Castell Rooftop Lounge</div>
+                <div class="single-poi" onclick="showPoi('Bar 54')">Bar 54</div>
+                <div class="single-poi" onclick="showPoi('The Stinger')">The Stinger</div>
+                <div class="single-poi" onclick="showPoi('III Pillars')">III Pillars</div>
+                <div class="single-poi" onclick="showPoi('Living Room')">Living Room</div>
+                <div class="single-poi" onclick="showPoi('The View')">The View</div>
+                <div class="single-poi" onclick="showPoi('St. Cloud Rooftop Bar')">St. Cloud Rooftop Bar</div>
+                <div class="single-poi" onclick="showPoi('The Skylark')">The Skylark</div>
+                <div class="single-poi" onclick="showPoi('Boqueria')">Boqueria</div>
+            </div>
+            
+            <!-- Lifestyle Category -->
+            <div class="menu-item" onclick="toggleCategory(this, 'lifestyle')">
+                <svg class="colour" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
+                    <circle id="Path" cx="5" cy="5" r="5" fill="#e3afa9"></circle>
+                </svg>
+                Lifestyle
+                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12.53" height="7.705" viewBox="0 0 12.53 7.705">
+                    <path id="Path_3_Copy_5" d="M0,0,5.969,6.94,12,0" transform="translate(0.265 0.23)" fill="none" stroke="#242529"
+                        stroke-miterlimit="10" stroke-width="0.7"></path>
+                </svg>
+            </div>
+            <div class="list-pois">
+                <div class="single-poi" onclick="showPoi('Whole Foods Market')">Whole Foods Market</div>
+                <div class="single-poi" onclick="showPoi('Soulcycle')">Soulcycle</div>
+                <div class="single-poi" onclick="showPoi('Equinox Bryant Park')">Equinox Bryant Park</div>
+            </div>
+            <!-- Other Categories -->
+            <a href="#" onclick="showTransportMenu()">See Transportation</a>
+        </div>
+        <div id="transport-menu" style="display: none;">
+            <p class="title-h2">Transportation</p>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/Hotel.png" alt="red dot - 3 Times Square">
+                <span class="paragraph1">1, 2, 3</span>
+            </div>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/Transportation.png" alt="green dot - 3 Times Square">
+                <span class="paragraph1">4, 5, 6</span>
+            </div>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/RestaurantsDining.png" alt="purple dot - 3 Times Square">
+                <span class="paragraph1">7</span>
+            </div>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/Bar.png" alt="blue dot - 3 Times Square">
+                <span class="paragraph1">A, C, E</span>
+            </div>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/Others.png" alt="orange dot - 3 Times Square">
+                <span class="paragraph1">B, D, F, M</span>
+            </div>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/Bike-Stations.png" alt="yello dot - 3 Times Square">
+                <span class="paragraph1">N, Q, R</span>
+            </div>
+            <div class="inf-trans-box">
+                <img src="https://3ts.com/wp-content/uploads/2021/01/Bici.png" alt="bike icon - 3 Times Square">
+                <span class="paragraph1">Citi Bikes</span>
+            </div>
+             <!-- Transportation Info --> 
+            <a href="#" onclick="showPOIMenu()">See Points of Interest</a>
+        </div>
+    </div>
+    <div id="map-container">
+        <!-- Mapbox GL JS Map -->
+        <div id="map"></div>
+
+        <!-- Transportation Map (Image) -->
+        <div id="transportation-map">
+            <figure class="figure-relative desk">
+                <img class="image-trans"
+                    src="https://3ts.com/wp-content/uploads/2021/02/3TS-TransportationMap-TimesSquare-2500x1443-min.jpg"
+                    alt="transportation map - 3 Times Square" style="transform: scale(1.1); width: 100%; height: 100%;">
+                <figcaption class="image-caption"></figcaption>
+            </figure>
+            <div class="map-controls">
+                <button id="zoom-in">+</button>
+                <button id="zoom-out">-</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTransportMenu() {
+            document.getElementById('poi-menu').style.display = 'none';
+            document.getElementById('transport-menu').style.display = 'block';
+            document.getElementById('transportation-map').style.display = 'block'; // Show the transportation map
+        }
+
+        function showPOIMenu() {
+            document.getElementById('transport-menu').style.display = 'none';
+            document.getElementById('poi-menu').style.display = 'block';
+            document.getElementById('transportation-map').style.display = 'none'; // Hide the transportation map
+        }
+
+        function toggleCategory(el, category) {
+            $(el).next('.list-pois').slideToggle();
+            $(el).toggleClass('collapsed');
+        }
+    </script>
+
+    <script>
+        const image = document.querySelector('.image-trans');
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY, originX, originY;
+
+        // Zoom in function
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            scale += 0.1;
+            image.style.transform = `scale(${scale})`;
+        });
+
+        // Zoom out function
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            scale = Math.max(1, scale - 0.1); // Prevent scaling below 1
+            image.style.transform = `scale(${scale})`;
+        });
+
+        // Dragging functionality for panning
+        image.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            originX = parseFloat(image.style.transformOrigin.split(' ')[0]);
+            originY = parseFloat(image.style.transformOrigin.split(' ')[1]);
+            image.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            image.style.transformOrigin = `${originX + dx / scale}px ${originY + dy / scale}px`;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            image.style.cursor = 'grab';
+        });
+
+    </script>
+
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="/js/pois.js"></script>
+    <script src="/js/maps.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "lifestyle",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name": "Whole Foods Market", "Lat": "40.75462088", "lng": "-73.98453276", "Address": "Whole Foods Market, 1095 6th Avenue, New York, NY 10036, United States of America", "url": "https://cordinatespicker.martinwainaina.xyz/?lat=40.75462088364321&lng=-73.9845275676665", "Number": "2", "Type": "Lifestyle", "color": "E2AFA8", "Link": "https://www.wholefoodsmarket.co.u" }, "geometry": { "type": "Point", "coordinates": [ -73.98453276, 40.75462088 ] } },
+{ "type": "Feature", "properties": { "Name": "Equinox Bryant Park", "Lat": "40.75504747", "lng": "-73.98509091", "Address": "120 West 42nd Street, New York, NY 10036, United States of America", "url": "https://cordinatespicker.martinwainaina.xyz/?lat=40.75504747066987&lng=-73.98509090888516", "Number": "4", "Type": "Lifestyle", "color": "E2AFA9", "Link": "https://www.equinox.com/clubs/new-york/midtown/bryantpark" }, "geometry": { "type": "Point", "coordinates": [ -73.98509091, 40.75504747 ] } },
+{ "type": "Feature", "properties": { "Name": "Soulcycle", "Lat": "40.75457234", "lng": "-73.98551983", "Address": "114 West 41st Street, New York, NY 10018, United States of America", "url": null, "Number": "3", "Type": "Lifestyle", "color": "E2AFA10", "Link": "https://www.soul-cycle.com/" }, "geometry": { "type": "Point", "coordinates": [ -73.98551983, 40.75457234 ] } }
+]
+}
